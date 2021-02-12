@@ -1,8 +1,5 @@
+from coinbase.api import APIRequest
 from typing import List
-import requests
-from coinbase.exceptions import APIException
-from coinbase.constants import COINBASE_API_URL
-from coinbase.auth import auth
 
 class Account:
     resource = 'accounts'
@@ -15,15 +12,11 @@ class Account:
 
     @classmethod
     def list(cls) -> List["Account"]:
-        res = requests.get(COINBASE_API_URL + cls.resource, auth=auth)
-        if res.status_code != requests.codes.OK:
-            raise APIException("There was some kind of problem with the request")
-        first_accounts = [cls(**account) for account in res.json()['data'] if float(account['balance']['amount']) != float(0)]
+        res = APIRequest.get_request(cls.resource)
+        first_accounts = [cls(**account) for account in res['data'] if float(account['balance']['amount']) != float(0)]
 
-        res = requests.get(COINBASE_API_URL + cls.resource + f"?starting_after={res.json()['pagination']['next_starting_after']}", auth=auth)
-        if res.status_code != requests.codes.OK:
-            raise APIException("There was some kind of problem with the request")
-        second_accounts = [cls(**account) for account in res.json()['data'] if float(account['balance']['amount']) != float(0)]
+        res = APIRequest.get_request(cls.resource + f"?starting_after={res['pagination']['next_starting_after']}")
+        second_accounts = [cls(**account) for account in res['data'] if float(account['balance']['amount']) != float(0)]
 
         return first_accounts + second_accounts
 

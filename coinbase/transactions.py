@@ -1,8 +1,5 @@
+from coinbase.api import APIRequest
 from typing import Dict, List
-import requests
-from coinbase.exceptions import APIException
-from coinbase.constants import COINBASE_API_URL
-from coinbase.auth import auth
 
 class Transaction:
     resource = 'accounts/{}/transactions'
@@ -18,7 +15,5 @@ class Transaction:
 
     @classmethod
     def list(cls, account_id) -> List["Transaction"]:
-        res = requests.get(COINBASE_API_URL + cls.resource.format(account_id), auth=auth)
-        if res.status_code != requests.codes.OK:
-            raise APIException("There was some kind of problem with the request")
-        return [cls(**transaction) for transaction in res.json()['data']]
+        res = APIRequest.get_request(cls.resource.format(account_id))
+        return [cls(**transaction) for transaction in res['data']]

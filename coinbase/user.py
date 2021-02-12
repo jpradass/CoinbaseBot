@@ -1,7 +1,4 @@
-import requests
-from coinbase.exceptions import APIException
-from coinbase.constants import COINBASE_API_URL
-from coinbase.auth import auth
+from coinbase.api import APIRequest
 
 class User:
     resource = 'user'
@@ -14,9 +11,7 @@ class User:
 
     @classmethod
     def me(cls) -> "User":
-        res = requests.get(COINBASE_API_URL + cls.resource, auth=auth)
-        if res.status_code != requests.codes.OK:
-            raise APIException("There was some kind of problem with the request")
-        return cls(**res.json()['data'])
+        res = APIRequest.get_request(cls.resource)
+        return cls(**res['data'])
 
     
