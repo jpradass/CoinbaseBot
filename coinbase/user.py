@@ -1,6 +1,10 @@
 from coinbase.api import APIRequest
 
 class User:
+    """
+    Generic user information. By default, only public information is shared without any scopes. 
+    More detailed information or email can be requested with additional scopes.
+    """
     resource = 'user'
 
     def __init__(self, *args: object, **kwargs: object) -> None:
